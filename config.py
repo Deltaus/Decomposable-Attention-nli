@@ -10,7 +10,7 @@ class Config(object):
     
     LEN_IN_BATCH = [20,50]
     BATCH_SIZE = 24
-    TIMESTEPS = 100
+    TIMESTEPS = 50
     DROPOUT_RATE = 0.2
     LEARNING_RATE = {'villa':0.05, 'intra':0.025}
     NUM_LSTM_LAYERS = 2
@@ -20,3 +20,4 @@ class Config(object):
     MIN_OCCUR_NUM = 5
     MAX_OCCUR_NUM = 100
     NUM_OF_EPOCH = 50
+    keep_prob = 0.5

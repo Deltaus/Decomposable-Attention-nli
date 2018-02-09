@@ -9,7 +9,7 @@ Created on Sun Feb  4 00:25:16 2018
 from nltk.tokenize import word_tokenize
 from embedding import word_embedding as embed_vect
 from collections import Counter
-#from config import Config
+from config import Config as conf
 
 
 def delete_bad(file_path):
@@ -47,8 +47,12 @@ def get_sentences(raw_pairs):
 
 def pad_sentence(token_list, pad_length, pad_id):
     
-    padding = [pad_id] * (pad_length - len(token_list))
-    padded_list = token_list + padding
+    #padding = [pad_id] * (pad_length - len(token_list))
+    if len(token_list) <= conf.TIMESTEPS:
+        padding = [pad_id] * (conf.TIMESTEPS - len(token_list))
+        padded_list = token_list + padding
+    else:
+        padded_list = padded_list[:conf.TIMESTEPS]
     
     return padded_list   #a padded list of a single sentence
 

@@ -29,7 +29,7 @@ if __name__=="__main__":
     sample_file_valid = 'dev_sample.jsonl'
     sample_file_test = 'test_sample.jsonl'
 
-    #train_data
+    #train_data  labels in one-hot
     sent_pairs_train, _, embeddings_t = read.preprocess_data(path+sample_file_train)
     #vad_data
     sent_pairs_valid, _, embeddings_v = read.preprocess_data(path+sample_file_valid)
@@ -46,20 +46,25 @@ if __name__=="__main__":
     # run epoch
     tf.reset_default_graph()
     with tf.variable_scope('snli_model'):
-        train_model = Model(Config, is_training=True, embedding_vect=embeddings_t)
+        train_model = Model(Config, is_training=True)
     with tf.variable_scope('snli_model', reuse=True):
-        eval_model = Model(Config, is_training=False, embedding_vect=embeddings_t)
+        eval_model = Model(Config, is_training=False)
     
+    init = tf.global_variables_initializer()
     with tf.Session() as sess:
-        tf.initialize_all_variables().run()
+        sess.run(init)
         for epoch in range(Config.NUM_OF_EPOCH):
-            print 'In epoch: %d' % (epoch + 1)
-            train.run_epoch(sess, train_model, sent_pairs_train, train_model.train_op, train_iters,  True)       
-            e_acc = run_epoch(sess, eval_model, sent_pairs_valid, tf.no_op, valid_iters, False)
-            print 'Valid Accuracy: %.3f' % e_acc
+            print 'In epoch: %d/%d' % (epoch + 1,Config.NUM_OF_EPOCH)
+            print 'Training:'
+            _, t_costs = train.run_epoch(sess, train_model, sent_pairs_train, train_iters, train_model.train_op, embed=embeddings_t, output_log=True)       
+            print 'Training total costs: %.3f' % t_costs
+            print 'Validating:'
+            e_acc, e_costs = train.run_epoch(sess, eval_model, sent_pairs_valid, valid_iters, train_op=None, embed=embeddings_t, output_log=False)
+            print 'Validate acc:%.3f, total costs: %.3f' % (e_acc,e_costs)
         
-        test_acc = run_epoch(sess, eval_model, sent_pairs_test, tf.no_op, test_iters, False)
-        print 'Test Accuracy: %.3f' % test_acc
+        print 'Testing:'
+        test_acc, test_costs = train.run_epoch(sess, eval_model, sent_pairs_test, test_iters, train_op=None, embed=embeddings_t, output_log=False)
+        print 'Test Accuracy: %.3f, Costs: %.3f' % (test_acc,test_costs)
 
 
 
