@@ -14,7 +14,7 @@ from config import Config
 
 
 
-def run_epoch(session, model, data, iters, train_op=None, embed=None, output_log=False):
+def run_epoch(session, model, data, iters, summ=None, train_op=None, train_writer=None, embed=None, output_log=False):
     
     total_costs = 0.0
     acc = 0
@@ -29,13 +29,11 @@ def run_epoch(session, model, data, iters, train_op=None, embed=None, output_log
         #print max_h
         #print model.TIMESTEPS_B
         if train_op is not None:
-            cost, acc, _ = session.run([model.cost, model.accuracy, train_op],\
-                                   feed_dict={model.a:prems, model.b:hypos, model.labels:labels})
+            cost, acc, _ = session.run([model.cost, model.accuracy, train_op], feed_dict={model.a:prems, model.b:hypos, model.labels:labels})
         else:
-            cost, acc = session.run([model.cost, model.accuracy],\
-                                   feed_dict={model.a:prems, model.b:hypos, model.labels:labels})
-            
-        total_costs += cost    
+            cost, acc = session.run([model.cost, model.accuracy], feed_dict={model.a:prems, model.b:hypos, model.labels:labels})           
+        total_costs += cost  
+        #train_writer.add_summary(summary, i)
 
         if output_log: #and i % 100 == 0:
             print 'After %d iteration(s), Acc is %.3f' % (i+1,acc)

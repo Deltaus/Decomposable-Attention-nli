@@ -67,12 +67,10 @@ class Model(object):
         b_with_alpha = tf.convert_to_tensor(b_with_alpha)
         
         with tf.variable_scope('compare'):
-            tp = [tf.squeeze(x) for x in tf.split(a_with_beta,self.TIMESTEPS_A,0)]
-            
+            tp = [tf.squeeze(x) for x in tf.split(a_with_beta,self.TIMESTEPS_A,0)]          
             v1 = tf.split(self.feed_forward(tf.concat(tp,0)), self.TIMESTEPS_A, 0)
         with tf.variable_scope('compare', reuse=True):
-            tp = [tf.squeeze(x) for x in tf.split(b_with_alpha,self.TIMESTEPS_B,0)]
-            
+            tp = [tf.squeeze(x) for x in tf.split(b_with_alpha,self.TIMESTEPS_B,0)]           
             v2 = tf.split(self.feed_forward(tf.concat(tp,0)), self.TIMESTEPS_B, 0)
         
         #aggregate
@@ -93,6 +91,8 @@ class Model(object):
         loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example([self.categories], [labels], [tf.ones([self.batch_size])])
         self.cost = tf.reduce_mean(loss) # B_S to 1x1
         self.accuracy = tf.reduce_mean(tf.cast(tf.equal(categ, labels), tf.float32))
+        #tf.summary.scalar('cost', self.cost)
+        #tf.summary.scalar('cost', self.accuracy)
         
         if is_training:
             
@@ -109,7 +109,7 @@ class Model(object):
     def feed_forward(self, input_vect):
         
         HIDDEN_UNITS = input_vect.get_shape().as_list()[1]
-        weight_layer1 = tf.get_variable('fw1', [HIDDEN_UNITS, HIDDEN_UNITS])
+        weight_layer1 = tf.get_variable('fw1', [HIDDEN_UNITS, HIDDEN_UNITS], )
         bias_layer1 = tf.get_variable('fb1', [HIDDEN_UNITS])
         weight_layer2 = tf.get_variable('fw2', [HIDDEN_UNITS, HIDDEN_UNITS])
         bias_layer2 = tf.get_variable('fb2', [HIDDEN_UNITS])
@@ -159,13 +159,6 @@ class Model(object):
 
         return tf.squeeze(features)
         
-        
-        
-        
-        
-        
-        
-        return output_vect
 
         
         

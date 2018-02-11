@@ -34,9 +34,10 @@ def get_sentences(raw_pairs):
     sentence2s = list()
     labels = list()
     for raw in raw_pairs:
-        sentence1s.append(raw['sentence1'].lower())
-        sentence2s.append(raw['sentence2'].lower())
-        labels.append(raw['gold_label'])
+        if raw['gold_label'] != '-':
+            sentence1s.append(raw['sentence1'].lower())
+            sentence2s.append(raw['sentence2'].lower())
+            labels.append(raw['gold_label'])
     
     #print sentence1s
     s1 = [word_tokenize(sentence) for sentence in sentence1s]  #word list of sentence1
